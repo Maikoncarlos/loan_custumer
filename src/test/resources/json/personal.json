@@ -1,0 +1,9 @@
+{
+  "customer": "Ericka",
+  "loans": [
+    {
+      "type": "personal",
+      "taxes": 4
+    }
+  ]
+}
