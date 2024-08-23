@@ -2,7 +2,6 @@ package loan_customer.controller;
 
 import loan_customer.controller.dto.CustomerRequest;
 import loan_customer.util.ReadJson;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static loan_customer.controller.factory.CustomerRequestFactory.buildOnlyLoanPersonal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
@@ -31,13 +31,6 @@ class LoanMatchControllerTest {
     @Autowired
     private JacksonTester<CustomerRequest> requestJson;
 
-    CustomerRequest request;
-
-
-    @BeforeEach
-    void setUp() {
-        request = new CustomerRequest("Ericka", "12345678910", 30, "SP", 3000.0);
-    }
 
     @Test
     @DisplayName("deve retornar erro BadRequest por faltar a request da requisição")
@@ -53,15 +46,16 @@ class LoanMatchControllerTest {
 
     @Test
     @DisplayName("deve retornar somente o emprestimo de personal")
-    void loanMatch() throws Exception {
+    void loanMatchOnlyPersonal() throws Exception {
 
         var atual = mvc.perform(post("/v1/loan")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson.write(request).getJson()))
+                        .content(requestJson.write(buildOnlyLoanPersonal(30, "SP", 3000.0)).getJson()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(ReadJson.execute("json/personal.json")))
                 .andReturn().getResponse();
 
         assertThat(atual.getStatus()).isEqualTo(OK.value());
     }
+
 }
